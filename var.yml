@@ -5,13 +5,11 @@ domain_name: 'test.com'
 vsi_image: REDHAT_8_64
 vsi_core: 1
 vsi_memory: 1024
-zone: us-south-3
 datacenter: che01
 private_subnet: 10.162.64.0/26
 public_subnet: 169.38.84.240/28
+sshkey: '<SSH RSA public key of ansible server to copy to VSIservers root@ansible>'
+cloudAPI: <IBM cloud API key of your account>
+classicAPI: <Classic API key of your account>
+classicUsername: <Classic username of your account>
 
-sshkey: 'ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQDgUgCPe1TRdy1ProLwt7qpWVXKKB9VEvcBIt527+RT2/uJ3p+qKV4U85Q/CHPN99mdZ+/vUKC1OUVk0WtRQQyifPTopPiuUNGJtgSlCHjvu+1j5hr3PZPVLem5tH8+nNSKjgQWEaef4D1yZOFYiveidRwX7KHpix7ZGBk2YaK7CA79qFsgm526FWp2iFUzAyYP/FgtaGcnUpxYAqweqtlkHWKz+A1LzUToNyu5RbHZ2NlhkjqtpuM9J34R98FUoERwf7FjuvYlOg/miDkWyyi97VQ8fKvdsI5vA0YpjwxlZYxgWObss0LEw6fXf7aZ8oblA22NCSv25nlWbeP5r6Nr/lHhpmCJMryLxdqyVubUz5xlULS3JEc9lHFY9x5vlXFNMNCPwOxyOI4rdsf8xScsIFDkRIlTzDi3DB0uTyn3ppn5USs8KrRcOHNGE3ZNsWq0J7srfdQahy/4ykHqnCaKlLKWY7i9LQiCPvLicZ/g1ANfmVQ1DRkWq235v8+8ckM= root@vineesh-ansible'
-
-cloudAPI: 
-classicAPI: 
-classicUsername: 
