@@ -1,0 +1,114 @@
+####################################
+################DAY1################
+---
+- name: Provision IBM classic VSI server
+  hosts: localhost
+  gather_facts: no
+  collections:
+   - ibm.cloudcollection
+
+  tasks:
+   - name: Fetch Variables from var file
+     include_vars:
+      file: var.yml
+      
+   - name: Create new SSH entry with Ansible public key 
+     ibm_compute_ssh_key:
+      label: vineesh-222Ansible-server
+      public_key: "{{sshkey}}"
+      state: available
+      ibmcloud_api_key: "{{cloudAPI}}"
+      iaas_classic_api_key: "{{classicAPI}}"
+      iaas_classic_username: "{{classicUsername}}"
+     register: result
+
+   - name: Create IBM hosts group entry in default inventory file
+     ansible.builtin.lineinfile:
+      path: /etc/ansible/hosts
+      insertafter: EOF
+      line: '[IBM_hosts]'
+
+   - name: Creating Classic VSIs in loop
+     ibm_compute_vm_instance:
+      hostname: "{{name_prefix}}-{{ansible_loop.index}}"
+      domain: "{{domain_name}}"
+      datacenter: "{{datacenter}}"
+      memory: "{{vsi_memory}}"
+      cores: "{{vsi_core}}"
+      local_disk: false
+      hourly_billing: true
+      disks: [25,25]
+      os_reference_code: "{{vsi_image}}"
+      ibmcloud_api_key: "{{cloudAPI}}"
+      iaas_classic_api_key: "{{classicAPI}}"
+      iaas_classic_username: "{{classicUsername}}"
+      ssh_key_ids: "{{result.resource.id}}"
+      state: available
+     register: vsilist 
+     loop: "{{ range(vsi_count)|list }}"
+     loop_control:
+       extended: yes
+
+   - name: Add new host ansible permenent inventory file
+     ansible.builtin.lineinfile:
+      path: /etc/ansible/hosts
+      insertafter: '\[IBM_hosts\]'
+      firstmatch: yes
+      line: "{{item.resource.hostname}} ansible_host={{item.resource.ipv4_address}} StrictHostKeyChecking=no"
+     register: newhosts
+     loop: "{{ vsilist.results }}"
+
+   - name: add the host to the memory inventory file
+     add_host:
+      name: "{{ item.resource.hostname }}"
+      groups: just_created
+      ansible_ssh_extra_args: -o StrictHostKeyChecking=no
+     loop: "{{ vsilist.results }}" 
+
+####################################
+################DAY2################
+
+- name: Day 2 automation playbook
+  hosts: just_created
+  gather_facts: no
+  tasks:   
+
+   - name: update all packages 
+     ansible.builtin.dnf:
+       name: "*"
+       state: latest
+
+   - name: Install list of packages
+     ansible.builtin.dnf:
+       name:
+         - wget
+         - sysstat
+         - psmisc
+         - traceroute
+       state: present  
+
+   - name: Ensure firewall package is installed
+     ansible.builtin.dnf:
+        name: firewalld
+        state: present
+
+   - name: Enable ssh custom port in firewall
+     ansible.posix.firewalld:
+        port: 2222/tcp
+        state: enabled
+        permanent: yes
+        immediate: yes
+
+   - name: Change the ssh to cutom port 2222
+     ansible.builtin.lineinfile:
+      path: /etc/ssh/sshd_config
+      regexp: 'Port 22'
+      firstmatch: yes
+      line: 'Port 2222'
+
+   - name: Restart the sshd service
+     ansible.builtin.service: 
+      name: sshd
+      state: restarted
+
+
