@@ -1,0 +1,14 @@
+---
+vsi_count: 1
+name_prefix: ibm-vsi-server0
+domain_name: 'test.com'
+vsi_image: REDHAT_8_64
+vsi_core: 1
+vsi_memory: 1024
+datacenter: che01
+private_subnet: 10.162.64.0/26
+public_subnet: 169.38.84.240/28
+sshkey: '<SSH RSA public key of ansible server to copy to VSIservers root@ansible>'
+cloudAPI: <IBM cloud API key of your account>
+classicAPI: <Classic API key of your account>
+classicUsername: <Classic username of your account>
