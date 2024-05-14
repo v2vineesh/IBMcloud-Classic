@@ -1,5 +1,5 @@
 ---
-vsi_count: 1
+vsi_count: 5
 name_prefix: ibm-vsi-server0
 domain_name: 'test.com'
 vsi_image: REDHAT_8_64
